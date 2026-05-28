@@ -312,25 +312,25 @@ LLM-as-Judge
 **The arbitration step**
 
 - Receives predictions + scores from **LCS**, **TTC**, **RAG**
-- The LLM sees: the product label, the three candidates, and filtered COICOP notices
-- Selects the most appropriate code, or flags the label as unresolvable
+- The LLM sees: the product label, shop context, the three candidates, and a filtered COICOP nomenclature (codes + labels)
+- Selects the most appropriate code and returns a confidence score (1–5)
 
 **Why LLM rather than majority vote?**
 
-Three methods with correlated errors → a vote can amplify them. The LLM uses the **label content** to break ties intelligently.
+A vote counts voices — the LLM **weights quality signals** (confidence, distance) and uses the full purchase context to resolve what no method could distinguish alone.
 :::
 
 ::: {.column width="45%"}
 **Two cost-saving shortcuts**
 
 1. **Consensus short-circuit** — if all three methods agree *and* TTC confidence ≥ 0.90 → **no LLM call**, prediction accepted directly
-2. **Nomenclature filtering** — only the relevant COICOP sections are injected → **4–10× fewer tokens**
+2. **Classification filtering** — only the relevant COICOP sections are injected → **4–10× fewer tokens**
 
 
 :::
 
 ::: {.notes}
-The LLM-as-Judge step receives the three predictions and arbitrates. Two shortcuts keep costs under control. First, the consensus short-circuit: if all three agree and TTC confidence is above 90%, we skip the LLM entirely. Second, nomenclature filtering: instead of injecting all 500 COICOP codes into every prompt, we filter to the relevant sections — cutting token counts by a factor of 4 to 10. The output is forced to be structured JSON for reliable parsing at scale.
+The LLM-as-Judge step receives the three predictions and arbitrates. Two shortcuts keep costs under control. First, the consensus short-circuit: if all three agree and TTC confidence is above 90%, we skip the LLM entirely. Second, nomenclature filtering: instead of injecting all ~700 COICOP codes into every prompt, we filter to the relevant sections — cutting token counts by a factor of 4 to 10. The output is forced to be structured JSON for reliable parsing at scale.
 :::
 
 ## MLOps: the production stack {#section_3_2 .backgroundStandard_bleu}
